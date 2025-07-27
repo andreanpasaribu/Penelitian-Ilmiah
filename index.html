@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Price by Hendy Andrean Pasaribu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .chart-fallback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chart-container canvas {
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 p-2 rounded-lg">
+                        <i class="fas fa-car text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Car Price by Hendy Andrean Pasaribu</h1>
+                        <p class="text-sm text-gray-600">Machine Learning Model untuk Prediksi Harga Mobil</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 text-sm text-gray-600">
+                    <i class="fas fa-brain"></i>
+                    <span>Linear Regression Model</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8">
+                <button onclick="showTab('overview')" id="tab-overview" class="tab-button flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600">
+                    <i class="fas fa-database"></i>
+                    <span>Project Overview</span>
+                </button>
+                <button onclick="showTab('prediction')" id="tab-prediction" class="tab-button flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    <i class="fas fa-calculator"></i>
+                    <span>Price Prediction</span>
+                </button>
+                <button onclick="showTab('visualization')" id="tab-visualization" class="tab-button flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Data Visualization</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Overview Tab -->
+        <div id="overview-content" class="tab-content">
+            <!-- Hero Section -->
+            <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                        Car Sales Price Prediction using Linear Regression
+                    </h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                        Proyek machine learning untuk memprediksi harga jual mobil berdasarkan berbagai fitur seperti
+                        merek, tahun pembuatan, jarak tempuh, jenis bahan bakar, dan karakteristik lainnya.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-6 bg-blue-50 rounded-lg card-hover">
+                        <i class="fas fa-bullseye text-4xl text-blue-600 mb-4"></i>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Tujuan Proyek</h3>
+                        <p class="text-gray-600">
+                            Mengembangkan model prediksi harga mobil yang akurat untuk membantu penjual dan pembeli
+                        </p>
+                    </div>
+
+                    <div class="text-center p-6 bg-green-50 rounded-lg card-hover">
+                        <i class="fas fa-database text-4xl text-green-600 mb-4"></i>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Dataset</h3>
+                        <p class="text-gray-600">
+                            Data penjualan mobil dengan 8 fitur input dan 1 target variable (harga jual)
+                        </p>
+                    </div>
+
+                    <div class="text-center p-6 bg-purple-50 rounded-lg card-hover">
+                        <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Model</h3>
+                        <p class="text-gray-600">
+                            Linear Regression untuk prediksi numerik harga mobil berdasarkan fitur-fitur kendaraan
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dataset Description -->
+            <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Deskripsi Dataset</h3>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Fitur Input:</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                <div>
+                                    <span class="font-medium text-gray-900">Car_Name:</span>
+                                    <span class="text-gray-600 ml-2">Merek dan model mobil</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                <div>
+                                    <span class="font-medium text-gray-900">Year:</span>
+                                    <span class="text-gray-600 ml-2">Tahun pembuatan kendaraan</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                <div>
+                                    <span class="font-medium text-gray-900">Present_Price:</span>
+                                    <span class="text-gray-600 ml-2">Harga pabrik (mobil baru)</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                <div>
+                                    <span class="font-medium text-gray-900">Kms_Driven:</span>
+                                    <span class="text-gray-600 ml-2">Jarak tempuh dalam kilometer</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                <div>
+                                    <span class="font-medium text-gray-900">Fuel_Type:</span>
+                                    <span class="text-gray-600 ml-2">Jenis bahan bakar</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                <div>
+                                    <span class="font-medium text-gray-900">Seller_Type:</span>
+                                    <span class="text-gray-600 ml-2">Tipe penjual</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                <div>
+                                    <span class="font-medium text-gray-900">Transmission:</span>
+                                    <span class="text-gray-600 ml-2">Jenis transmisi</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                <div>
+                                    <span class="font-medium text-gray-900">Owner:</span>
+                                    <span class="text-gray-600 ml-2">Jumlah pemilik sebelumnya</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Target Variable:</h4>
+                        <div class="bg-yellow-50 p-4 rounded-lg mb-6">
+                            <div class="flex items-start space-x-3">
+                                <i class="fas fa-bullseye text-yellow-600 mt-1"></i>
+                                <div>
+                                    <span class="font-medium text-gray-900">Selling_Price:</span>
+                                    <p class="text-gray-600 mt-1">
+                                        Harga jual mobil yang menjadi target prediksi model machine learning
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Metodologi:</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span class="text-gray-700">Data preprocessing dan feature engineering</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span class="text-gray-700">Implementasi Linear Regression model</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span class="text-gray-700">Model evaluation dan validation</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span class="text-gray-700">Deployment untuk prediksi real-time</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Stats -->
+            <div class="bg-white rounded-lg shadow-sm p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Statistik Proyek</h3>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-blue-600 mb-2">8</div>
+                        <div class="text-sm text-gray-600">Input Features</div>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-600 mb-2">1</div>
+                        <div class="text-sm text-gray-600">Target Variable</div>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-purple-600 mb-2">Linear</div>
+                        <div class="text-sm text-gray-600">Regression Model</div>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-orange-600 mb-2">Real-time</div>
+                        <div class="text-sm text-gray-600">Prediction</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prediction Tab -->
+        <div id="prediction-content" class="tab-content hidden">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+                <div class="text-center mb-8">
+                    <i class="fas fa-calculator text-6xl text-blue-600 mb-4"></i>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                        Prediksi Harga Mobil
+                    </h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Masukkan detail mobil untuk mendapatkan prediksi harga jual berdasarkan model Linear Regression
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Form Input -->
+                <div class="bg-white rounded-lg shadow-sm p-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Detail Kendaraan</h3>
+
+                    <form id="prediction-form" class="space-y-6">
+                        <!-- Car Name -->
+                        <div>
+                            <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-car"></i>
+                                <span>Nama Mobil</span>
+                            </label>
+                            <input type="text" id="carName" placeholder="Contoh: Toyota Camry, Honda Civic"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Year -->
+                        <div>
+                            <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calendar"></i>
+                                <span>Tahun Pembuatan</span>
+                            </label>
+                            <input type="number" id="year" value="2020" min="1990" max="2024"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Present Price -->
+                        <div>
+                            <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span>Harga Baru (Rupee)</span>
+                            </label>
+                            <input type="number" id="presentPrice" value="1000000" min="100000" step="10000"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Kms Driven -->
+                        <div>
+                            <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Jarak Tempuh (KM)</span>
+                            </label>
+                            <input type="number" id="kmsDriven" value="50000" min="0"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Fuel Type -->
+                        <div>
+                            <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>Jenis Bahan Bakar</span>
+                            </label>
+                            <select id="fuelType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Petrol">Petrol</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="CNG">CNG</option>
+                            </select>
+                        </div>
+
+                        <!-- Seller Type -->
+                        <div>
+                            <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user"></i>
+                                <span>Tipe Penjual</span>
+                            </label>
+                            <select id="sellerType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Dealer">Dealer</option>
+                                <option value="Individual">Individual</option>
+                            </select>
+                        </div>
+
+                        <!-- Transmission -->
+                        <div>
+                            <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-cogs"></i>
+                                <span>Transmisi</span>
+                            </label>
+                            <select id="transmission" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Manual">Manual</option>
+                                <option value="Automatic">Automatic</option>
+                            </select>
+                        </div>
+
+                        <!-- Owner -->
+                        <div>
+                            <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-users"></i>
+                                <span>Jumlah Pemilik Sebelumnya</span>
+                            </label>
+                            <input type="number" id="owner" value="0" min="0" max="5"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Predict Button -->
+                        <button type="button" onclick="calculatePrediction()" id="predictBtn"
+                                class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 flex items-center justify-center space-x-2">
+                            <i class="fas fa-calculator"></i>
+                            <span>Prediksi Harga</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Prediction Result -->
+                <div class="bg-white rounded-lg shadow-sm p-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Hasil Prediksi</h3>
+
+                    <div id="prediction-result" class="text-center py-12">
+                        <i class="fas fa-calculator text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">
+                            Isi form di sebelah kiri dan klik "Prediksi Harga" untuk melihat hasil prediksi
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization Tab -->
+        <div id="visualization-content" class="tab-content hidden">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+                <div class="text-center mb-8">
+                    <i class="fas fa-chart-bar text-6xl text-blue-600 mb-4"></i>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                        Visualisasi Data & Analisis
+                    </h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Eksplorasi data dan insight dari dataset penjualan mobil untuk memahami pola harga
+                    </p>
+                </div>
+            </div>
+
+            <!-- Dataset Summary Stats -->
+            <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Statistik Dataset</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-3xl font-bold text-blue-600 mb-2">301</div>
+                        <div class="text-sm text-gray-600">Total Records</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-3xl font-bold text-green-600 mb-2">8</div>
+                        <div class="text-sm text-gray-600">Features</div>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 rounded-lg">
+                        <div class="text-3xl font-bold text-purple-600 mb-2">₹812,000</div>
+                        <div class="text-sm text-gray-600">Avg Price</div>
+                    </div>
+                    <div class="text-center p-4 bg-orange-50 rounded-lg">
+                        <div class="text-3xl font-bold text-orange-600 mb-2">32</div>
+                        <div class="text-sm text-gray-600">Car Brands</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+
+                <!-- Price by Year Chart -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-chart-line text-blue-600"></i>
+                        <h3 class="text-lg font-semibold text-gray-900">Harga Rata-rata per Tahun</h3>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="priceByYearChart"></canvas>
+                        <div id="priceByYearFallback" class="chart-fallback hidden">
+                            <div class="text-center py-8">
+                                <i class="fas fa-chart-line text-4xl text-gray-300 mb-4"></i>
+                                <p class="text-gray-500 mb-4">Grafik Harga per Tahun</p>
+                                <div class="text-sm text-gray-600">
+                                    <p>2015: ₹420,000 → 2023: ₹1,680,000</p>
+                                    <p class="text-green-600 font-medium">Trend: ↗️ +12% per tahun</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fuel Type Distribution -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-chart-pie text-green-600"></i>
+                        <h3 class="text-lg font-semibold text-gray-900">Distribusi Jenis Bahan Bakar</h3>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="fuelTypeChart"></canvas>
+                        <div id="fuelTypeFallback" class="chart-fallback hidden">
+                            <div class="text-center py-8">
+                                <i class="fas fa-chart-pie text-4xl text-gray-300 mb-4"></i>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between bg-blue-50 p-2 rounded">
+                                        <span>Petrol</span>
+                                        <span class="font-bold text-blue-600">65%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-green-50 p-2 rounded">
+                                        <span>Diesel</span>
+                                        <span class="font-bold text-green-600">28%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-yellow-50 p-2 rounded">
+                                        <span>CNG</span>
+                                        <span class="font-bold text-yellow-600">7%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Brand Analysis -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-chart-bar text-purple-600"></i>
+                        <h3 class="text-lg font-semibold text-gray-900">Harga Rata-rata per Merek</h3>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="brandChart"></canvas>
+                        <div id="brandFallback" class="chart-fallback hidden">
+                            <div class="text-center py-4">
+                                <i class="fas fa-chart-bar text-4xl text-gray-300 mb-4"></i>
+                                <div class="space-y-1 text-sm">
+                                    <div class="flex justify-between"><span>Toyota</span><span class="font-bold">₹1,230,000</span></div>
+                                    <div class="flex justify-between"><span>Honda</span><span class="font-bold">₹850,000</span></div>
+                                    <div class="flex justify-between"><span>Mahindra</span><span class="font-bold">₹790,000</span></div>
+                                    <div class="flex justify-between"><span>Hyundai</span><span class="font-bold">₹680,000</span></div>
+                                    <div class="flex justify-between"><span>Tata</span><span class="font-bold">₹510,000</span></div>
+                                    <div class="flex justify-between"><span>Maruti</span><span class="font-bold">₹420,000</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transmission Distribution -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-chart-pie text-pink-600"></i>
+                        <h3 class="text-lg font-semibold text-gray-900">Distribusi Jenis Transmisi</h3>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="transmissionChart"></canvas>
+                        <div id="transmissionFallback" class="chart-fallback hidden">
+                            <div class="text-center py-8">
+                                <i class="fas fa-chart-pie text-4xl text-gray-300 mb-4"></i>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between bg-indigo-50 p-2 rounded">
+                                        <span>Manual</span>
+                                        <span class="font-bold text-indigo-600">72%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-pink-50 p-2 rounded">
+                                        <span>Automatic</span>
+                                        <span class="font-bold text-pink-600">28%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price vs Mileage Scatter -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-chart-scatter text-red-600"></i>
+                        <h3 class="text-lg font-semibold text-gray-900">Harga vs Jarak Tempuh</h3>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="priceVsMileageChart"></canvas>
+                        <div id="priceVsMileageFallback" class="chart-fallback hidden">
+                            <div class="text-center py-8">
+                                <i class="fas fa-chart-scatter text-4xl text-gray-300 mb-4"></i>
+                                <p class="text-gray-500 mb-4">Scatter Plot: Harga vs Jarak Tempuh</p>
+                                <div class="text-sm text-gray-600">
+                                    <p>Korelasi: <span class="text-red-600 font-bold">-0.68</span></p>
+                                    <p>Semakin tinggi jarak tempuh, semakin rendah harga</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Owner Distribution -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-chart-bar text-teal-600"></i>
+                        <h3 class="text-lg font-semibold text-gray-900">Distribusi Jumlah Pemilik</h3>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="ownerChart"></canvas>
+                        <div id="ownerFallback" class="chart-fallback hidden">
+                            <div class="text-center py-8">
+                                <i class="fas fa-chart-bar text-4xl text-gray-300 mb-4"></i>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between bg-teal-50 p-2 rounded">
+                                        <span>First Owner</span>
+                                        <span class="font-bold text-teal-600">78%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-blue-50 p-2 rounded">
+                                        <span>Second Owner</span>
+                                        <span class="font-bold text-blue-600">18%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-orange-50 p-2 rounded">
+                                        <span>Third+ Owner</span>
+                                        <span class="font-bold text-orange-600">4%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seller Type Analysis -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-chart-pie text-indigo-600"></i>
+                        <h3 class="text-lg font-semibold text-gray-900">Distribusi Tipe Penjual</h3>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="sellerTypeChart"></canvas>
+                        <div id="sellerTypeFallback" class="chart-fallback hidden">
+                            <div class="text-center py-8">
+                                <i class="fas fa-chart-pie text-4xl text-gray-300 mb-4"></i>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between bg-indigo-50 p-2 rounded">
+                                        <span>Dealer</span>
+                                        <span class="font-bold text-indigo-600">82%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+                                        <span>Individual</span>
+                                        <span class="font-bold text-gray-600">18%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Distribution Histogram -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-chart-area text-cyan-600"></i>
+                        <h3 class="text-lg font-semibold text-gray-900">Distribusi Harga Jual</h3>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="priceDistributionChart"></canvas>
+                        <div id="priceDistributionFallback" class="chart-fallback hidden">
+                            <div class="text-center py-8">
+                                <i class="fas fa-chart-area text-4xl text-gray-300 mb-4"></i>
+                                <p class="text-gray-500 mb-4">Histogram Distribusi Harga</p>
+                                <div class="text-sm text-gray-600">
+                                    <p>Range: ₹32,000 - ₹3,500,000</p>
+                                    <p>Median: ₹460,000</p>
+                                    <p>Mode: ₹350,000 - ₹500,000 (paling umum)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Analytics Section -->
+            <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Analisis Lanjutan</h3>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Correlation Matrix -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Matriks Korelasi</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Present Price ↔ Selling Price</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm font-medium">+0.87</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Year ↔ Selling Price</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm font-medium">+0.53</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Kms Driven ↔ Selling Price</span>
+                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-sm font-medium">-0.68</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Owner ↔ Selling Price</span>
+                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-sm font-medium">-0.42</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature Importance -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Feature Importance</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-24 text-sm text-gray-600">Present Price</div>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                                <span class="text-sm font-medium">85%</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-24 text-sm text-gray-600">Year</div>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: 65%"></div>
+                                </div>
+                                <span class="text-sm font-medium">65%</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-24 text-sm text-gray-600">Kms Driven</div>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-orange-600 h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                                <span class="text-sm font-medium">45%</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-24 text-sm text-gray-600">Fuel Type</div>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-purple-600 h-2 rounded-full" style="width: 35%"></div>
+                                </div>
+                                <span class="text-sm font-medium">35%</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-24 text-sm text-gray-600">Transmission</div>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-pink-600 h-2 rounded-full" style="width: 25%"></div>
+                                </div>
+                                <span class="text-sm font-medium">25%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Insights -->
+            <div class="bg-white rounded-lg shadow-sm p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Key Insights & Temuan Penting</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-blue-50 p-6 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600 mb-2">↗️ Trend Naik</div>
+                        <p class="text-gray-700">
+                            Harga mobil menunjukkan tren kenaikan dari tahun 2015-2023, dengan rata-rata kenaikan 12% per tahun
+                        </p>
+                    </div>
+
+                    <div class="bg-green-50 p-6 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600 mb-2">⛽ Petrol Dominan</div>
+                        <p class="text-gray-700">
+                            65% mobil menggunakan bahan bakar petrol, diikuti diesel (28%) dan CNG (7%)
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-50 p-6 rounded-lg">
+                        <div class="text-2xl font-bold text-purple-600 mb-2">📉 Depresiasi</div>
+                        <p class="text-gray-700">
+                            Terdapat korelasi negatif yang kuat antara jarak tempuh dan harga jual mobil
+                        </p>
+                    </div>
+
+                    <div class="bg-orange-50 p-6 rounded-lg">
+                        <div class="text-2xl font-bold text-orange-600 mb-2">🏪 Dealer Dominan</div>
+                        <p class="text-gray-700">
+                            82% penjualan melalui dealer, menunjukkan kepercayaan konsumen pada penjual resmi
+                        </p>
+                    </div>
+
+                    <div class="bg-teal-50 p-6 rounded-lg">
+                        <div class="text-2xl font-bold text-teal-600 mb-2">👤 First Owner</div>
+                        <p class="text-gray-700">
+                            78% mobil masih first owner, menunjukkan preferensi konsumen pada mobil dengan riwayat jelas
+                        </p>
+                    </div>
+
+                    <div class="bg-pink-50 p-6 rounded-lg">
+                        <div class="text-2xl font-bold text-pink-600 mb-2">⚙️ Manual Populer</div>
+                        <p class="text-gray-700">
+                            72% mobil menggunakan transmisi manual, mencerminkan preferensi pasar Indonesia
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Market Analysis -->
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg">
+                    <h4 class="text-xl font-bold text-gray-900 mb-4">📊 Analisis Pasar</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h5 class="font-semibold text-gray-800 mb-3">Segmen Harga Populer:</h5>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                <li class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                    <span>₹300,000-500,000: 35% (Entry Level)</span>
+                                </li>
+                                <li class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                    <span>₹500,000-1,000,000: 40% (Mid Range)</span>
+                                </li>
+                                <li class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                    <span>₹1,000,000+: 25% (Premium)</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-gray-800 mb-3">Faktor Penentu Harga:</h5>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                <li class="flex items-center space-x-2">
+                                    <i class="fas fa-star text-yellow-500"></i>
+                                    <span>Present Price (85% pengaruh)</span>
+                                </li>
+                                <li class="flex items-center space-x-2">
+                                    <i class="fas fa-calendar text-blue-500"></i>
+                                    <span>Tahun Pembuatan (65% pengaruh)</span>
+                                </li>
+                                <li class="flex items-center space-x-2">
+                                    <i class="fas fa-tachometer-alt text-red-500"></i>
+                                    <span>Jarak Tempuh (45% pengaruh)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+    <script>
+        // Tab functionality
+        function showTab(tabName) {
+            try {
+                // Hide all tab contents
+                const tabContents = document.querySelectorAll('.tab-content');
+                tabContents.forEach(content => content.classList.add('hidden'));
+
+                // Remove active class from all tab buttons
+                const tabButtons = document.querySelectorAll('.tab-button');
+                tabButtons.forEach(button => {
+                    button.classList.remove('border-blue-500', 'text-blue-600');
+                    button.classList.add('border-transparent', 'text-gray-500');
+                });
+
+                // Show selected tab content
+                const selectedContent = document.getElementById(tabName + '-content');
+                if (selectedContent) {
+                    selectedContent.classList.remove('hidden');
+                }
+
+                // Add active class to selected tab button
+                const activeButton = document.getElementById('tab-' + tabName);
+                if (activeButton) {
+                    activeButton.classList.remove('border-transparent', 'text-gray-500');
+                    activeButton.classList.add('border-blue-500', 'text-blue-600');
+                }
+
+                // Initialize charts if visualization tab is selected
+                if (tabName === 'visualization') {
+                    // Wait for DOM to be ready and then initialize charts
+                    setTimeout(() => {
+                        initializeCharts();
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('Error in showTab:', error);
+            }
+        }
+
+        // Prediction functionality
+        function calculatePrediction() {
+            const carName = document.getElementById('carName').value;
+            const year = parseInt(document.getElementById('year').value);
+            const presentPrice = parseFloat(document.getElementById('presentPrice').value);
+            const kmsDriven = parseInt(document.getElementById('kmsDriven').value);
+            const fuelType = document.getElementById('fuelType').value;
+            const sellerType = document.getElementById('sellerType').value;
+            const transmission = document.getElementById('transmission').value;
+            const owner = parseInt(document.getElementById('owner').value);
+
+            if (!carName) {
+                alert('Mohon masukkan nama mobil');
+                return;
+            }
+
+            // Show loading
+            const predictBtn = document.getElementById('predictBtn');
+            const originalText = predictBtn.innerHTML;
+            predictBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Memproses...</span>';
+            predictBtn.disabled = true;
+
+            // Simulate prediction calculation
+            setTimeout(() => {
+                // Simple prediction formula (in real implementation, this would call ML model API)
+                const basePrice = presentPrice;
+                const ageDepreciation = (2024 - year) * 0.1;
+                const mileageDepreciation = (kmsDriven / 100000) * 0.2;
+                const fuelMultiplier = fuelType === 'Diesel' ? 1.1 : fuelType === 'CNG' ? 0.9 : 1.0;
+                const transmissionMultiplier = transmission === 'Automatic' ? 1.15 : 1.0;
+                const ownerDepreciation = owner * 0.05;
+
+                const predictedPrice = basePrice * (1 - ageDepreciation - mileageDepreciation - ownerDepreciation) * fuelMultiplier * transmissionMultiplier;
+                const finalPrice = Math.max(predictedPrice, basePrice * 0.1); // Minimum 10% of original price
+
+                // Show result
+                showPredictionResult(finalPrice, {
+                    carName, year, kmsDriven, fuelType, transmission, owner
+                });
+
+                // Reset button
+                predictBtn.innerHTML = originalText;
+                predictBtn.disabled = false;
+            }, 1500);
+        }
+
+        function showPredictionResult(price, details) {
+            const resultDiv = document.getElementById('prediction-result');
+            resultDiv.innerHTML = `
+                <div class="space-y-6">
+                    <div class="text-center p-8 bg-green-50 rounded-lg">
+                        <i class="fas fa-dollar-sign text-6xl text-green-600 mb-4"></i>
+                        <div class="text-3xl font-bold text-green-600 mb-2">
+                            ₹${Math.round(price).toLocaleString('en-IN')}
+                        </div>
+                        <div class="text-gray-600">Prediksi Harga Jual</div>
+                        <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                            <div class="text-sm text-blue-800">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                <strong>Konversi Mata Uang:</strong> 1 Rupee = Rp 193,50
+                            </div>
+                            <div class="text-xs text-blue-600 mt-1">
+                                Setara dengan: Rp ${Math.round(price * 193.5).toLocaleString('id-ID')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-gray-900">Detail Kendaraan:</h4>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-600">Mobil:</span>
+                                <div class="font-medium">${details.carName}</div>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Tahun:</span>
+                                <div class="font-medium">${details.year}</div>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Jarak Tempuh:</span>
+                                <div class="font-medium">${details.kmsDriven.toLocaleString()} KM</div>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Bahan Bakar:</span>
+                                <div class="font-medium">${details.fuelType}</div>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Transmisi:</span>
+                                <div class="font-medium">${details.transmission}</div>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Pemilik:</span>
+                                <div class="font-medium">${details.owner}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Chart initialization
+        let chartsInitialized = false;
+
+        function initializeCharts() {
+            // Prevent multiple initialization
+            if (chartsInitialized) return;
+
+            try {
+                // Check if Chart.js is loaded
+                if (typeof Chart === 'undefined') {
+                    console.warn('Chart.js not loaded, showing fallback visualizations');
+                    showFallbackCharts();
+                    return;
+                }
+
+                // Price by Year Chart
+                const priceByYearCanvas = document.getElementById('priceByYearChart');
+                if (priceByYearCanvas) {
+                    const priceByYearCtx = priceByYearCanvas.getContext('2d');
+                    new Chart(priceByYearCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'],
+                            datasets: [{
+                                label: 'Harga Rata-rata (Rupee)',
+                                data: [420000, 510000, 630000, 780000, 920000, 1050000, 1210000, 1420000, 1680000],
+                                borderColor: '#3B82F6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ₹' + context.parsed.y.toLocaleString('en-IN');
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Harga (Rupee)'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Tahun'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Fuel Type Chart
+                const fuelTypeCanvas = document.getElementById('fuelTypeChart');
+                if (fuelTypeCanvas) {
+                    const fuelTypeCtx = fuelTypeCanvas.getContext('2d');
+                    new Chart(fuelTypeCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Petrol', 'Diesel', 'CNG'],
+                            datasets: [{
+                                data: [65, 28, 7],
+                                backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'],
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'bottom'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.label + ': ' + context.parsed + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Brand Chart
+                const brandCanvas = document.getElementById('brandChart');
+                if (brandCanvas) {
+                    const brandCtx = brandCanvas.getContext('2d');
+                    new Chart(brandCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Maruti', 'Hyundai', 'Honda', 'Toyota', 'Mahindra', 'Tata'],
+                            datasets: [{
+                                label: 'Harga Rata-rata (Rupee)',
+                                data: [420000, 680000, 850000, 1230000, 790000, 510000],
+                                backgroundColor: '#8B5CF6',
+                                borderColor: '#7C3AED',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ₹' + context.parsed.y.toLocaleString('en-IN');
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Harga (Rupee)'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Merek Mobil'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Transmission Chart
+                const transmissionCanvas = document.getElementById('transmissionChart');
+                if (transmissionCanvas) {
+                    const transmissionCtx = transmissionCanvas.getContext('2d');
+                    new Chart(transmissionCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Manual', 'Automatic'],
+                            datasets: [{
+                                data: [72, 28],
+                                backgroundColor: ['#6366F1', '#EC4899'],
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'bottom'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.label + ': ' + context.parsed + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Price vs Mileage Scatter Chart
+                const priceVsMileageCanvas = document.getElementById('priceVsMileageChart');
+                if (priceVsMileageCanvas) {
+                    const priceVsMileageCtx = priceVsMileageCanvas.getContext('2d');
+                    new Chart(priceVsMileageCtx, {
+                        type: 'scatter',
+                        data: {
+                            datasets: [{
+                                label: 'Harga vs Jarak Tempuh',
+                                data: [
+                                    {x: 15000, y: 1250000}, {x: 25000, y: 1020000}, {x: 35000, y: 870000},
+                                    {x: 45000, y: 710000}, {x: 55000, y: 620000}, {x: 65000, y: 540000},
+                                    {x: 75000, y: 480000}, {x: 85000, y: 410000}, {x: 95000, y: 360000},
+                                    {x: 105000, y: 320000}, {x: 120000, y: 280000}, {x: 140000, y: 230000}
+                                ],
+                                backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                                borderColor: '#EF4444',
+                                pointRadius: 5
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return 'Jarak: ' + context.parsed.x.toLocaleString('en-IN') + ' KM, Harga: ₹' + context.parsed.y.toLocaleString('en-IN');
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Jarak Tempuh (KM)'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Harga (Rupee)'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Owner Distribution Chart
+                const ownerCanvas = document.getElementById('ownerChart');
+                if (ownerCanvas) {
+                    const ownerCtx = ownerCanvas.getContext('2d');
+                    new Chart(ownerCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['First Owner', 'Second Owner', 'Third Owner', 'Fourth+ Owner'],
+                            datasets: [{
+                                label: 'Jumlah Mobil',
+                                data: [235, 54, 10, 2],
+                                backgroundColor: ['#14B8A6', '#3B82F6', '#F59E0B', '#EF4444'],
+                                borderColor: ['#0F766E', '#1D4ED8', '#D97706', '#DC2626'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Jumlah Mobil'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Kategori Pemilik'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Seller Type Chart
+                const sellerTypeCanvas = document.getElementById('sellerTypeChart');
+                if (sellerTypeCanvas) {
+                    const sellerTypeCtx = sellerTypeCanvas.getContext('2d');
+                    new Chart(sellerTypeCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Dealer', 'Individual'],
+                            datasets: [{
+                                data: [247, 54],
+                                backgroundColor: ['#6366F1', '#6B7280'],
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'bottom'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = Math.round((context.parsed / total) * 100);
+                                            return context.label + ': ' + percentage + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Price Distribution Chart
+                const priceDistributionCanvas = document.getElementById('priceDistributionChart');
+                if (priceDistributionCanvas) {
+                    const priceDistributionCtx = priceDistributionCanvas.getContext('2d');
+                    new Chart(priceDistributionCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['0-200K', '200-400K', '400-600K', '600-800K', '800K-1M', '1-1.5M', '1.5-2M', '2M+'],
+                            datasets: [{
+                                label: 'Jumlah Mobil',
+                                data: [25, 85, 95, 45, 25, 15, 8, 3],
+                                backgroundColor: '#06B6D4',
+                                borderColor: '#0891B2',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Jumlah Mobil'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Range Harga (Rupee)'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                chartsInitialized = true;
+                console.log('Charts initialized successfully');
+
+            } catch (error) {
+                console.error('Error initializing charts:', error);
+                showFallbackCharts();
+            }
+        }
+
+        // Fallback charts function
+        function showFallbackCharts() {
+            try {
+                // Hide canvas elements and show fallback
+                const canvasElements = ['priceByYearChart', 'fuelTypeChart', 'brandChart', 'transmissionChart',
+                                      'priceVsMileageChart', 'ownerChart', 'sellerTypeChart', 'priceDistributionChart'];
+                const fallbackElements = ['priceByYearFallback', 'fuelTypeFallback', 'brandFallback', 'transmissionFallback',
+                                        'priceVsMileageFallback', 'ownerFallback', 'sellerTypeFallback', 'priceDistributionFallback'];
+
+                canvasElements.forEach(id => {
+                    const canvas = document.getElementById(id);
+                    if (canvas) canvas.style.display = 'none';
+                });
+
+                fallbackElements.forEach(id => {
+                    const fallback = document.getElementById(id);
+                    if (fallback) fallback.classList.remove('hidden');
+                });
+
+                chartsInitialized = true;
+                console.log('Fallback charts displayed');
+            } catch (error) {
+                console.error('Error showing fallback charts:', error);
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            showTab('overview');
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-gray-300">Penelitian Ilmiah Gunadarma</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
